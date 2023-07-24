@@ -144,7 +144,7 @@ void adc_dma_callback(int ch, int err)
 
     MXC_ADC_DisableConversion();
 
-    dma_done = 1;
+    // dma_done = 1;
 }
 
 void DMA_IRQHandler(void)
@@ -281,10 +281,10 @@ void ShowAdcResult(void)
 {
     unsigned int loop_count;
 
-    if (which_example == TEMP_SENSOR) {
-        /* Disable Temperature Sensor Select */
-        MXC_ADC_TS_SelectDisable();
-    }
+    // if (which_example == TEMP_SENSOR) {
+    //     /* Disable Temperature Sensor Select */
+    //     MXC_ADC_TS_SelectDisable();
+    // }
 
     // Stop the ADC
     MXC_ADC_DisableConversion();
@@ -305,9 +305,9 @@ void ShowAdcResult(void)
 
     adc_index = 0;
 
-    if (which_example == TEMP_SENSOR) {
-        printTemperature();
-    }
+    // if (which_example == TEMP_SENSOR) {
+    //     printTemperature();
+    // }
 }
 
 // void adc_temp_conversion(void)
@@ -403,14 +403,14 @@ int main(void)
 #endif
 
 #ifdef DMA
-        dma_done = 0;
-        if (which_example == TEMP_SENSOR) {
-            /* Enable Temperature Sensor Select */
-            MXC_ADC_TS_SelectEnable();
+        // dma_done = 0;
+        // if (which_example == TEMP_SENSOR) {
+        //     /* Enable Temperature Sensor Select */
+        //     MXC_ADC_TS_SelectEnable();
 
-            /* Wait for Temperature measurement to be ready */
-            MXC_TMR_Delay(MXC_TMR0, USEC(500));
-        }
+        //     /* Wait for Temperature measurement to be ready */
+        //     MXC_TMR_Delay(MXC_TMR0, USEC(500));
+        // }
 
         int dma_channel = MXC_DMA_AcquireChannel();
         adc_conv.dma_channel = dma_channel;
