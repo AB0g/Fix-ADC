@@ -55,41 +55,41 @@
 #define DMA // Uncomment to perform ADC conversions using DMA driven method.
 
 /* Supported ADC examples */
-#define SINGLE_CH 1
-#define TEMP_SENSOR 2
+// #define SINGLE_CH 1
+// #define TEMP_SENSOR 2
 #define MULTI_CHS 3
 
 // Temp Sensor Example defines
-#define TEMP_SENSOR_READ_OUT 1 // Index of the temp sensor reading
-#define MXC_ADC_CH_VDDA MXC_ADC_CH_12 // VDDA connected to ADC Channel 12
-#define MXC_ADC_CH_TEMP_SENSOR MXC_ADC_CH_13 // Temp Sensor connected to ADC channel 13
-#define MXC_ADC_CH_VCORE MXC_ADC_CH_14 // VCORE connected to ADC channel 14
+// #define TEMP_SENSOR_READ_OUT 1 // Index of the temp sensor reading
+// #define MXC_ADC_CH_VDDA MXC_ADC_CH_12 // VDDA connected to ADC Channel 12
+// #define MXC_ADC_CH_TEMP_SENSOR MXC_ADC_CH_13 // Temp Sensor connected to ADC channel 13
+// #define MXC_ADC_CH_VCORE MXC_ADC_CH_14 // VCORE connected to ADC channel 14
 
 /***** Globals *****/
-#ifdef INTERRUPT
-volatile unsigned int adc_done = 0;
-#endif
+// #ifdef INTERRUPT
+// volatile unsigned int adc_done = 0;
+// #endif
 
 #ifdef DMA
-volatile unsigned int dma_done = 0;
+// volatile unsigned int dma_done = 0;
 #endif
 
 /* Single Channel ADC Request */
-mxc_adc_slot_req_t single_slot = { MXC_ADC_CH_3, MXC_ADC_DIV2_5K, MXC_ADC_PY_DN_DISABLE };
+// mxc_adc_slot_req_t single_slot = { MXC_ADC_CH_3, MXC_ADC_DIV2_5K, MXC_ADC_PY_DN_DISABLE };
 
 /* Temperature Sensor ADC Request */
 /* It is recommended to use below sequence if only user wants to measure only temperature measurement.*/
-mxc_adc_slot_req_t three_slots[3] = {
-    { MXC_ADC_CH_VDDA, MXC_ADC_DIV2_5K, MXC_ADC_PY_DN_DISABLE },
-    { MXC_ADC_CH_TEMP_SENSOR, MXC_ADC_DIV1, MXC_ADC_PY_DN_DISABLE },
-    { MXC_ADC_CH_VCORE, MXC_ADC_DIV2_5K, MXC_ADC_PY_DN_DISABLE }
-};
+// mxc_adc_slot_req_t three_slots[3] = {
+//     { MXC_ADC_CH_VDDA, MXC_ADC_DIV2_5K, MXC_ADC_PY_DN_DISABLE },
+//     { MXC_ADC_CH_TEMP_SENSOR, MXC_ADC_DIV1, MXC_ADC_PY_DN_DISABLE },
+//     { MXC_ADC_CH_VCORE, MXC_ADC_DIV2_5K, MXC_ADC_PY_DN_DISABLE }
+// };
 
-// Temperature Sensor firmware average
-#define SAMPLE_AVG 16
-float TEMP_SAMPLES[SAMPLE_AVG] = {};
-float sum = 0;
-unsigned int temp_samples = 0;
+// // Temperature Sensor firmware average
+// #define SAMPLE_AVG 16
+// float TEMP_SAMPLES[SAMPLE_AVG] = {};
+// float sum = 0;
+// unsigned int temp_samples = 0;
 
 /* Multi-channel ADC request */
 mxc_adc_slot_req_t multi_slots[8] = { { MXC_ADC_CH_3, MXC_ADC_DIV2_5K, MXC_ADC_PY_DN_DISABLE },
@@ -102,7 +102,7 @@ mxc_adc_slot_req_t multi_slots[8] = { { MXC_ADC_CH_3, MXC_ADC_DIV2_5K, MXC_ADC_P
                                       { MXC_ADC_CH_10, MXC_ADC_DIV2_5K, MXC_ADC_PY_DN_DISABLE } };
 
 // Used to cycle through supported ADC examples
-unsigned int which_example = 0;
+// unsigned int which_example = 0;
 
 int adc_val[8];
 uint32_t adc_index = 0;
@@ -110,27 +110,27 @@ uint32_t adc_index = 0;
 mxc_adc_conversion_req_t adc_conv;
 
 /***** Functions *****/
-#ifdef INTERRUPT
-void adc_complete_cb(void *req, int flags)
-{
-    if (flags & MXC_F_ADC_INTFL_SEQ_DONE) {
-        adc_index += MXC_ADC_GetData(&adc_val[adc_index]);
-        adc_done = 1;
-    }
+// #ifdef INTERRUPT
+// void adc_complete_cb(void *req, int flags)
+// {
+//     if (flags & MXC_F_ADC_INTFL_SEQ_DONE) {
+//         adc_index += MXC_ADC_GetData(&adc_val[adc_index]);
+//         adc_done = 1;
+//     }
 
-    if (flags & MXC_F_ADC_INTFL_FIFO_LVL) {
-        adc_index += MXC_ADC_GetData(&adc_val[adc_index]);
-    }
-    return;
-}
+//     if (flags & MXC_F_ADC_INTFL_FIFO_LVL) {
+//         adc_index += MXC_ADC_GetData(&adc_val[adc_index]);
+//     }
+//     return;
+// }
 
-void ADC_IRQHandler(void)
-{
-    MXC_ADC_DisableConversion();
+// void ADC_IRQHandler(void)
+// {
+//     MXC_ADC_DisableConversion();
 
-    MXC_ADC_Handler();
-}
-#endif
+//     MXC_ADC_Handler();
+// }
+// #endif
 
 #ifdef DMA
 void ADC_IRQHandler(void)
@@ -173,72 +173,72 @@ void adc_init(void)
 }
 
 /* Single channel Example Function(s) */
-void adc_example1_configuration(void)
-{
-    adc_conv.mode = MXC_ADC_ATOMIC_CONV;
-    adc_conv.trig = MXC_ADC_TRIG_SOFTWARE;
-    adc_conv.avg_number = MXC_ADC_AVG_16;
-    adc_conv.fifo_format = MXC_ADC_DATA_STATUS;
-    adc_conv.lpmode_divder = MXC_ADC_DIV_2_5K_50K_ENABLE;
-    adc_conv.num_slots = 0;
-#ifdef DMA
-    adc_conv.fifo_threshold = 0;
-#else
-    adc_conv.fifo_threshold = MAX_ADC_FIFO_LEN >> 1;
-#endif
+// void adc_example1_configuration(void)
+// {
+//     adc_conv.mode = MXC_ADC_ATOMIC_CONV;
+//     adc_conv.trig = MXC_ADC_TRIG_SOFTWARE;
+//     adc_conv.avg_number = MXC_ADC_AVG_16;
+//     adc_conv.fifo_format = MXC_ADC_DATA_STATUS;
+//     adc_conv.lpmode_divder = MXC_ADC_DIV_2_5K_50K_ENABLE;
+//     adc_conv.num_slots = 0;
+// #ifdef DMA
+//     adc_conv.fifo_threshold = 0;
+// #else
+//     adc_conv.fifo_threshold = MAX_ADC_FIFO_LEN >> 1;
+// #endif
 
-    MXC_ADC_Configuration(&adc_conv);
+//     MXC_ADC_Configuration(&adc_conv);
 
-    MXC_ADC_SlotConfiguration(&single_slot, 0);
-}
+//     MXC_ADC_SlotConfiguration(&single_slot, 0);
+// }
 
-/* Temperature Sensor Example Function(s) */
-void adc_example2_configuration(void)
-{
-    adc_conv.mode = MXC_ADC_ATOMIC_CONV;
-    adc_conv.trig = MXC_ADC_TRIG_HARDWARE;
-    adc_conv.hwTrig = MXC_ADC_TRIG_SEL_TEMP_SENS;
-    adc_conv.avg_number = MXC_ADC_AVG_8;
-    adc_conv.fifo_format = MXC_ADC_DATA_STATUS;
-    adc_conv.lpmode_divder = MXC_ADC_DIV_2_5K_50K_ENABLE;
-    adc_conv.num_slots = 2;
-#ifdef DMA
-    adc_conv.fifo_threshold = 2;
-#else
-    adc_conv.fifo_threshold = MAX_ADC_FIFO_LEN >> 1;
-#endif
+// /* Temperature Sensor Example Function(s) */
+// void adc_example2_configuration(void)
+// {
+//     adc_conv.mode = MXC_ADC_ATOMIC_CONV;
+//     adc_conv.trig = MXC_ADC_TRIG_HARDWARE;
+//     adc_conv.hwTrig = MXC_ADC_TRIG_SEL_TEMP_SENS;
+//     adc_conv.avg_number = MXC_ADC_AVG_8;
+//     adc_conv.fifo_format = MXC_ADC_DATA_STATUS;
+//     adc_conv.lpmode_divder = MXC_ADC_DIV_2_5K_50K_ENABLE;
+//     adc_conv.num_slots = 2;
+// #ifdef DMA
+//     adc_conv.fifo_threshold = 2;
+// #else
+//     adc_conv.fifo_threshold = MAX_ADC_FIFO_LEN >> 1;
+// #endif
 
-    MXC_ADC_Configuration(&adc_conv);
+//     MXC_ADC_Configuration(&adc_conv);
 
-    MXC_ADC_SlotConfiguration(three_slots, 2);
-}
+//     MXC_ADC_SlotConfiguration(three_slots, 2);
+// }
 
-void temperature_average(float temperature)
-{
-    float average;
-    TEMP_SAMPLES[temp_samples++] = temperature;
-    sum += temperature;
+// void temperature_average(float temperature)
+// {
+//     float average;
+//     TEMP_SAMPLES[temp_samples++] = temperature;
+//     sum += temperature;
 
-    if (temp_samples == SAMPLE_AVG) {
-        average = sum / SAMPLE_AVG;
-        printf("Average = %0.2fC\n\n", average);
+//     if (temp_samples == SAMPLE_AVG) {
+//         average = sum / SAMPLE_AVG;
+//         printf("Average = %0.2fC\n\n", average);
 
-        temp_samples = 0;
-        sum = 0;
-        MXC_TMR_Delay(MXC_TMR0, MSEC(3000));
-    }
-}
+//         temp_samples = 0;
+//         sum = 0;
+//         MXC_TMR_Delay(MXC_TMR0, MSEC(3000));
+//     }
+// }
 
-void printTemperature(void)
-{
-    float temperature;
-    MXC_ConvertTemperature_ToK((adc_val[TEMP_SENSOR_READ_OUT] & 0x0FFF), MXC_ADC_REF_INT_2V048, 0,
-                               &temperature);
+// void printTemperature(void)
+// {
+//     float temperature;
+//     MXC_ConvertTemperature_ToK((adc_val[TEMP_SENSOR_READ_OUT] & 0x0FFF), MXC_ADC_REF_INT_2V048, 0,
+//                                &temperature);
 
-    MXC_ConvertTemperature_ToC((adc_val[TEMP_SENSOR_READ_OUT] & 0x0FFF), MXC_ADC_REF_INT_2V048, 0,
-                               &temperature);
-    temperature_average(temperature);
-}
+//     MXC_ConvertTemperature_ToC((adc_val[TEMP_SENSOR_READ_OUT] & 0x0FFF), MXC_ADC_REF_INT_2V048, 0,
+//                                &temperature);
+//     temperature_average(temperature);
+// }
 
 /* Multi Channel Example Function (s) */
 void adc_example3_configuration(void)
@@ -260,22 +260,22 @@ void adc_example3_configuration(void)
     MXC_ADC_SlotConfiguration(multi_slots, 7);
 }
 
-void WaitforConversionComplete(void)
-{
-    unsigned int flags;
-    while (1) {
-        flags = MXC_ADC_GetFlags();
+// void WaitforConversionComplete(void)
+// {
+//     unsigned int flags;
+//     while (1) {
+//         flags = MXC_ADC_GetFlags();
 
-        if (flags & MXC_F_ADC_INTFL_SEQ_DONE) {
-            adc_index += MXC_ADC_GetData(&adc_val[adc_index]);
-            break;
-        }
+//         if (flags & MXC_F_ADC_INTFL_SEQ_DONE) {
+//             adc_index += MXC_ADC_GetData(&adc_val[adc_index]);
+//             break;
+//         }
 
-        if (flags & MXC_F_ADC_INTFL_FIFO_LVL) {
-            adc_index += MXC_ADC_GetData(&adc_val[adc_index]);
-        }
-    }
-}
+//         if (flags & MXC_F_ADC_INTFL_FIFO_LVL) {
+//             adc_index += MXC_ADC_GetData(&adc_val[adc_index]);
+//         }
+//     }
+// }
 
 void ShowAdcResult(void)
 {
@@ -310,47 +310,47 @@ void ShowAdcResult(void)
     }
 }
 
-void adc_temp_conversion(void)
-{
-    if (which_example == TEMP_SENSOR) {
-        /* Enable Temperature Sensor Select */
-        MXC_ADC_TS_SelectEnable();
-        /* Wait for Temperature measurement to be ready */
-        MXC_TMR_Delay(MXC_TMR0, USEC(500));
-    }
+// void adc_temp_conversion(void)
+// {
+//     if (which_example == TEMP_SENSOR) {
+//         /* Enable Temperature Sensor Select */
+//         MXC_ADC_TS_SelectEnable();
+//         /* Wait for Temperature measurement to be ready */
+//         MXC_TMR_Delay(MXC_TMR0, USEC(500));
+//     }
 
-    MXC_ADC_StartConversion();
-}
+//     MXC_ADC_StartConversion();
+// }
 
 void run_examples(void)
 {
-    which_example++;
+    // which_example++;
 
-    if (which_example > MULTI_CHS) {
-        which_example = SINGLE_CH;
-    }
+    // if (which_example > MULTI_CHS) {
+    //     which_example = SINGLE_CH;
+    // }
 
-    switch (which_example) {
-    case SINGLE_CH:
-        printf("\nRunning Single Channel Example\n");
-        adc_example1_configuration();
-        break;
+    // switch (which_example) {
+    // case SINGLE_CH:
+    //     printf("\nRunning Single Channel Example\n");
+    //     adc_example1_configuration();
+    //     break;
 
-    case TEMP_SENSOR:
-        printf("\nRunning Temperature Sensor Example\n");
-        adc_example2_configuration();
-        break;
+    // case TEMP_SENSOR:
+    //     printf("\nRunning Temperature Sensor Example\n");
+    //     adc_example2_configuration();
+    //     break;
 
-    case MULTI_CHS:
+    // case MULTI_CHS:
         printf("\nRunning Multi Channel Example\n");
         adc_example3_configuration();
-        break;
+    //     break;
 
-    default:
-        which_example = SINGLE_CH;
-        adc_example1_configuration();
-        break;
-    }
+    // default:
+    //     which_example = SINGLE_CH;
+    //     adc_example1_configuration();
+    //     break;
+    // }
 }
 
 int main(void)
@@ -367,7 +367,7 @@ int main(void)
     adc_init();
 
     /* Start with Single Channel Example */
-    adc_example1_configuration();
+    // adc_example1_configuration();
 
 #if defined(INTERRUPT) || defined(DMA)
     NVIC_EnableIRQ(ADC_IRQn);
@@ -419,7 +419,7 @@ int main(void)
         NVIC_EnableIRQ(MXC_DMA_CH_GET_IRQ(dma_channel));
         MXC_ADC_StartConversionDMA(&adc_conv, &adc_val[0], adc_dma_callback);
 
-        while (!dma_done) {}
+        // while (!dma_done) {}
 
         MXC_DMA_ReleaseChannel(adc_conv.dma_channel);
 #endif
